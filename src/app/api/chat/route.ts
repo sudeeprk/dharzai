@@ -1,8 +1,8 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { CoreMessage, streamText, StreamData } from 'ai';
-import { auth } from '@/auth';
-import { prisma } from '@/lib/db';
-import { NextRequest, NextResponse } from 'next/server';
+import { createOpenAI } from "@ai-sdk/openai";
+import { CoreMessage, streamText, StreamData } from "ai";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -21,25 +21,27 @@ export async function POST(req: NextRequest) {
     const userId = session?.user?.id;
 
     // Map client messages to the Vercel AI SDK CoreMessage format
-    const coreMessages: CoreMessage[] = messages.map((msg: { role: 'user' | 'assistant'; content: string }) => ({
-      role: msg.role,
-      content: msg.content,
-    }));
+    const coreMessages: CoreMessage[] = messages.map(
+      (msg: { role: "user" | "assistant"; content: string }) => ({
+        role: msg.role,
+        content: msg.content,
+      })
+    );
 
     // If a file is present, update the last message's content to include the image
     if (file && coreMessages.length > 0) {
       const lastMessage = coreMessages[coreMessages.length - 1];
-      if (lastMessage.role === 'user') {
+      if (lastMessage.role === "user") {
         lastMessage.content = [
-          { type: 'text', text: lastMessage.content as string },
-          { type: 'image', image: new URL(file) }, // The file is a data URI
+          { type: "text", text: lastMessage.content as string },
+          { type: "image", image: new URL(file) }, // The file is a data URI
         ];
       }
     }
-    
+
     // Prepend the system prompt to the message history
     const allMessages: CoreMessage[] = [
-      { role: 'system', content: systemPrompt },
+      { role: "system", content: systemPrompt },
       ...coreMessages,
     ];
 
@@ -49,25 +51,33 @@ export async function POST(req: NextRequest) {
     // For unauthenticated users, just stream the response
     if (!userId) {
       const result = await streamText({
-        model: openai('gpt-4o'),
+        model: openai("gpt-4o"),
         messages: allMessages,
       });
       // The `toAIStreamResponse` helper handles the streaming response.
-      return result.toAIStreamResponse();
+      return result.toDataStreamResponse();
     }
 
     // For authenticated users, save the conversation.
-    const chat = await prisma.chat.upsert({
-      where: { id: clientChatId || '' },
-      create: { userId },
-      update: {},
-      select: { id: true },
-    });
+    let chat;
+    if (clientChatId) {
+      chat = await prisma.chat.upsert({
+        where: { id: clientChatId },
+        create: { userId },
+        update: {},
+        select: { id: true },
+      });
+    } else {
+      chat = await prisma.chat.create({
+        data: { userId },
+        select: { id: true },
+      });
+    }
 
     await prisma.message.create({
       data: {
         chatId: chat.id,
-        role: 'user',
+        role: "user",
         content: userMessageToSave,
       },
     });
@@ -76,14 +86,14 @@ export async function POST(req: NextRequest) {
     data.append({ chatId: chat.id });
 
     const result = await streamText({
-      model: openai('gpt-4o'),
+      model: openai("gpt-4o"),
       messages: allMessages,
       onFinish: async ({ text }) => {
         // Save the final assistant response to the database
         await prisma.message.create({
           data: {
             chatId: chat.id,
-            role: 'assistant',
+            role: "assistant",
             content: text,
           },
         });
@@ -92,15 +102,14 @@ export async function POST(req: NextRequest) {
     });
 
     // The `toAIStreamResponse` helper also handles streaming custom data
-    return result.toAIStreamResponse({ data });
-
+    return result.toDataStreamResponse({ data });
   } catch (error) {
-    console.error('Chat API error:', error);
+    console.error("Chat API error:", error);
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
     return NextResponse.json(
-      { message: 'An internal error occurred' },
+      { message: "An internal error occurred" },
       { status: 500 }
     );
   }

@@ -80,14 +80,10 @@ export function ChatLayout({
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, data, append } =
+  const { messages, input, handleInputChange, handleSubmit: originalHandleSubmit, isLoading, data, append } =
     useChat({
       api: '/api/chat',
       initialMessages,
-      body: {
-        chatId: initialChatId,
-        file: filePreview,
-      },
       onResponse: (response) => {
         if (response.status === 401) {
           // Handle unauthorized access
@@ -97,15 +93,33 @@ export function ChatLayout({
       onFinish: () => {
         setFile(null);
         setFilePreview(null);
-        if (!initialChatId && user) {
-          const newChatId = (data as any[])?.find(d => d.chatId)?.chatId;
-          if (newChatId) {
-            router.push(`/chat/${newChatId}`);
-            router.refresh();
+        // If a user is logged in, we may need to update the UI
+        if (user) {
+          // If it was a brand new chat, we need to navigate to the new chat's URL
+          if (!initialChatId) {
+            const newChatId = (data as any[])?.find(d => d.chatId)?.chatId;
+            if (newChatId) {
+              router.push(`/chat/${newChatId}`);
+            }
           }
+          // In either case (new or existing chat), we refresh to update the sidebar
+          router.refresh();
         }
       },
     });
+    
+  // Wrapper to explicitly pass chatId and filePreview on each submission
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    originalHandleSubmit(e, {
+      options: {
+        body: {
+          chatId: initialChatId,
+          file: filePreview,
+        },
+      },
+    });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
