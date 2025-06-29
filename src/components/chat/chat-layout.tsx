@@ -18,6 +18,52 @@ interface ChatLayoutProps {
   user: User | null;
 }
 
+const GuestHeader = () => (
+  <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex justify-center items-center gap-2">
+          <Sparkles className="h-6 w-6 text-primary" />
+          <h1 className="text-xl font-bold">Dharz AI</h1>
+      </div>
+      <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button asChild variant="ghost">
+              <Link href="/login">Login</Link>
+          </Button>
+          <Button asChild>
+              <Link href="/signup">Sign Up</Link>
+          </Button>
+      </div>
+  </div>
+);
+
+const EmptyState = () => (
+  <div className="flex flex-col items-center justify-center h-full text-center">
+    <Bot className="w-16 h-16 mb-4 text-primary" />
+    <h2 className="text-2xl font-semibold mb-2">How can I help you today?</h2>
+    <p className="text-muted-foreground mb-8">
+      Ask me anything! I can help you with a variety of tasks.
+    </p>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
+      <Button variant="outline" className="h-auto text-left py-3">
+        <p className="font-semibold">Explain quantum computing</p>
+        <p className="text-sm text-muted-foreground">in simple terms</p>
+      </Button>
+      <Button variant="outline" className="h-auto text-left py-3">
+        <p className="font-semibold">Got any creative ideas</p>
+        <p className="text-sm text-muted-foreground">for a 10 year old’s birthday?</p>
+      </Button>
+      <Button variant="outline" className="h-auto text-left py-3">
+        <p className="font-semibold">Write a thank you note</p>
+        <p className="text-sm text-muted-foreground">to my interviewer</p>
+      </Button>
+      <Button variant="outline" className="h-auto text-left py-3">
+        <p className="font-semibold">Help me debug a python script</p>
+        <p className="text-sm text-muted-foreground">that's not working</p>
+      </Button>
+    </div>
+  </div>
+);
+
 export function ChatLayout({
   initialMessages = [],
   chatId: initialChatId,
@@ -55,53 +101,6 @@ export function ChatLayout({
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
-
-
-  const EmptyState = () => (
-    <div className="flex flex-col items-center justify-center h-full text-center">
-      <Bot className="w-16 h-16 mb-4 text-primary" />
-      <h2 className="text-2xl font-semibold mb-2">How can I help you today?</h2>
-      <p className="text-muted-foreground mb-8">
-        Ask me anything! I can help you with a variety of tasks.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
-        <Button variant="outline" className="h-auto text-left py-3">
-          <p className="font-semibold">Explain quantum computing</p>
-          <p className="text-sm text-muted-foreground">in simple terms</p>
-        </Button>
-        <Button variant="outline" className="h-auto text-left py-3">
-          <p className="font-semibold">Got any creative ideas</p>
-          <p className="text-sm text-muted-foreground">for a 10 year old’s birthday?</p>
-        </Button>
-        <Button variant="outline" className="h-auto text-left py-3">
-          <p className="font-semibold">Write a thank you note</p>
-          <p className="text-sm text-muted-foreground">to my interviewer</p>
-        </Button>
-        <Button variant="outline" className="h-auto text-left py-3">
-          <p className="font-semibold">Help me debug a python script</p>
-          <p className="text-sm text-muted-foreground">that's not working</p>
-        </Button>
-      </div>
-    </div>
-  );
-
-  const GuestHeader = () => (
-    <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex justify-center items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Dharz AI</h1>
-        </div>
-        <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button asChild variant="ghost">
-                <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild>
-                <Link href="/signup">Sign Up</Link>
-            </Button>
-        </div>
-    </div>
-  );
 
 
   return (
