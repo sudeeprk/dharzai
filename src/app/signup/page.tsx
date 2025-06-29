@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,22 +29,11 @@ export default function SignupPage() {
       });
 
       if (res.ok) {
-        const signInResult = await signIn('credentials', {
-            redirect: false,
-            email,
-            password,
+        toast({
+            title: 'Signup Successful',
+            description: 'You can now log in with your credentials.',
         });
-        if (signInResult?.ok) {
-            router.push('/');
-            router.refresh();
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Sign-in Failed',
-                description: 'Could not sign you in after registration. Please log in manually.',
-            });
-            router.push('/login');
-        }
+        router.push('/login');
       } else {
         const data = await res.json();
         toast({
