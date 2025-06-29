@@ -12,6 +12,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import {
@@ -22,8 +33,10 @@ import {
   PanelLeftOpen,
   Plus,
   Sparkles,
+  Trash2
 } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '../theme-toggle';
@@ -36,6 +49,23 @@ interface SidebarProps {
 
 export function Sidebar({ user, chats, activeChatId }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const router = useRouter();
+
+  const handleDelete = async (chatId: string) => {
+    try {
+      await fetch('/api/chat/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId }),
+      });
+      router.refresh();
+      if (activeChatId === chatId) {
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Failed to delete chat', error);
+    }
+  };
 
   return (
     <div
@@ -73,17 +103,45 @@ export function Sidebar({ user, chats, activeChatId }: SidebarProps) {
         <ScrollArea className="flex-1 px-2">
           <div className="space-y-1">
             {chats.map(chat => (
-              <Button
-                key={chat.id}
-                asChild
-                variant={activeChatId === chat.id ? 'secondary' : 'ghost'}
-                className={cn('w-full justify-start', isCollapsed && 'justify-center')}
-              >
-                <Link href={`/chat/${chat.id}`} className="truncate">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  {!isCollapsed && (chat.messages[0]?.content.substring(0, 20) || 'New Chat')}
-                </Link>
-              </Button>
+              <div key={chat.id} className="relative group">
+                <Button
+                  asChild
+                  variant={activeChatId === chat.id ? 'secondary' : 'ghost'}
+                  className={cn('w-full justify-start pr-8', isCollapsed && 'justify-center')}
+                >
+                  <Link href={`/chat/${chat.id}`} className="truncate">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    {!isCollapsed && (chat.messages[0]?.content.substring(0, 20) || 'New Chat')}
+                  </Link>
+                </Button>
+                {!isCollapsed && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete your chat history.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(chat.id)}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
             ))}
           </div>
         </ScrollArea>
