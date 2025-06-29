@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Link from 'next/link';
-import { useToast } from '@/hooks/use-toast';
-import { Sparkles } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,32 +22,32 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
       if (res.ok) {
         toast({
-          title: 'Signup Successful',
-          description: 'You can now log in with your credentials.',
+          title: "Signup Successful",
+          description: "You can now log in with your credentials.",
         });
-        router.push('/login');
+        router.push("/login");
       } else {
         const data = await res.json();
-        console.log(data)
+        console.log(data);
         toast({
-            variant: 'destructive',
-            title: 'Signup Failed',
-            description: data.message || 'An error occurred.',
+          variant: "destructive",
+          title: "Signup Failed",
+          description: data.message || "An error occurred.",
         });
       }
     } catch (error) {
-       toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'An unexpected error occurred.',
-       });
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -57,11 +57,22 @@ export default function SignupPage() {
     <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="flex justify-center items-center gap-2 mb-4">
-            <Sparkles className="h-7 w-7 text-primary" />
-            <h1 className="text-3xl font-bold">Dharz AI</h1>
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight">Create an account</h2>
+          <Link
+            href="/"
+            className="flex justify-center items-center gap-2 mb-4"
+          >
+            <Image
+              loading="lazy"
+              src="/logo.png"
+              width={1000}
+              height={100}
+              alt="Logo"
+              className="h-auto w-[150px] mr-2 rounded"
+            />
+          </Link>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Create an account
+          </h2>
           <p className="text-sm text-muted-foreground">
             Enter your details below to create your account
           </p>
@@ -103,11 +114,11 @@ export default function SignupPage() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create Account'}
+            {isLoading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link href="/login" className="underline font-medium">
             Sign in
           </Link>

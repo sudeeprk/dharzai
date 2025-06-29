@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { CoreMessage, streamText, StreamData } from "ai";
+import { CoreMessage, streamText, createDataStream } from "ai";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     const userId = session?.user?.id;
 
-    // Map client messages to the Vercel AI SDK CoreMessage format
     const coreMessages: CoreMessage[] = messages.map(
       (msg: { role: "user" | "assistant"; content: string }) => ({
         role: msg.role,
@@ -28,37 +27,32 @@ export async function POST(req: NextRequest) {
       })
     );
 
-    // If a file is present, update the last message's content to include the image
     if (file && coreMessages.length > 0) {
       const lastMessage = coreMessages[coreMessages.length - 1];
       if (lastMessage.role === "user") {
         lastMessage.content = [
           { type: "text", text: lastMessage.content as string },
-          { type: "image", image: new URL(file) }, // The file is a data URI
+          { type: "image", image: new URL(file) },
         ];
       }
     }
 
-    // Prepend the system prompt to the message history
     const allMessages: CoreMessage[] = [
       { role: "system", content: systemPrompt },
       ...coreMessages,
     ];
 
-    // Get the text part of the original last user message to save to the database
     const userMessageToSave = messages[messages.length - 1].content;
 
-    // For unauthenticated users, just stream the response
     if (!userId) {
       const result = await streamText({
         model: openai("gpt-4o"),
         messages: allMessages,
       });
-      // The `toAIStreamResponse` helper handles the streaming response.
+
       return result.toDataStreamResponse();
     }
 
-    // For authenticated users, save the conversation.
     let chat;
     if (clientChatId) {
       chat = await prisma.chat.upsert({
@@ -70,7 +64,6 @@ export async function POST(req: NextRequest) {
     } else {
       chat = await prisma.chat.create({
         data: { userId },
-        select: { id: true },
       });
     }
 
@@ -82,14 +75,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const data = new StreamData();
-    data.append({ chatId: chat.id });
-
     const result = await streamText({
       model: openai("gpt-4o"),
       messages: allMessages,
       onFinish: async ({ text }) => {
-        // Save the final assistant response to the database
         await prisma.message.create({
           data: {
             chatId: chat.id,
@@ -97,12 +86,13 @@ export async function POST(req: NextRequest) {
             content: text,
           },
         });
-        data.close();
       },
     });
 
-    // The `toAIStreamResponse` helper also handles streaming custom data
-    return result.toDataStreamResponse({ data });
+    // Create a custom response that includes the chatId
+    const response = result.toDataStreamResponse();
+    response.headers.set("X-Chat-ID", chat.id);
+    return response;
   } catch (error) {
     console.error("Chat API error:", error);
     if (error instanceof Error) {
