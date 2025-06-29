@@ -36,7 +36,18 @@ const GuestHeader = () => (
   </div>
 );
 
-const EmptyState = () => (
+const promptSuggestions = [
+    { title: 'Explain quantum computing', subtitle: 'in simple terms' },
+    { title: 'Got any creative ideas', subtitle: 'for a 10 year old’s birthday?' },
+    { title: 'Write a thank you note', subtitle: 'to my interviewer' },
+    { title: 'Help me debug a python script', subtitle: 'that\'s not working' },
+];
+
+interface EmptyStateProps {
+    append: (message: Omit<Message, 'id'>) => void;
+}
+  
+const EmptyState = ({ append }: EmptyStateProps) => (
   <div className="flex flex-col items-center justify-center h-full text-center p-4">
     <Bot className="w-16 h-16 mb-4 text-primary" />
     <h2 className="text-2xl font-semibold mb-2">How can I help you today?</h2>
@@ -44,22 +55,17 @@ const EmptyState = () => (
       Ask me anything! I can help you with a variety of tasks.
     </p>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
-      <Button variant="outline" className="h-auto text-left py-3">
-        <p className="font-semibold">Explain quantum computing</p>
-        <p className="text-sm text-muted-foreground">in simple terms</p>
-      </Button>
-      <Button variant="outline" className="h-auto text-left py-3">
-        <p className="font-semibold">Got any creative ideas</p>
-        <p className="text-sm text-muted-foreground">for a 10 year old’s birthday?</p>
-      </Button>
-      <Button variant="outline" className="h-auto text-left py-3">
-        <p className="font-semibold">Write a thank you note</p>
-        <p className="text-sm text-muted-foreground">to my interviewer</p>
-      </Button>
-      <Button variant="outline" className="h-auto text-left py-3">
-        <p className="font-semibold">Help me debug a python script</p>
-        <p className="text-sm text-muted-foreground">that's not working</p>
-      </Button>
+    {promptSuggestions.map((prompt, index) => (
+        <Button
+            key={index}
+            variant="outline"
+            className="h-auto text-left py-3"
+            onClick={() => append({ role: 'user', content: `${prompt.title} ${prompt.subtitle}`.trim() })}
+        >
+            <p className="font-semibold">{prompt.title}</p>
+            <p className="text-sm text-muted-foreground">{prompt.subtitle}</p>
+        </Button>
+    ))}
     </div>
   </div>
 );
@@ -74,7 +80,7 @@ export function ChatLayout({
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, data } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, data, append } =
     useChat({
       api: '/api/chat',
       initialMessages,
@@ -131,7 +137,7 @@ export function ChatLayout({
         {messages.length > 0 ? (
           <ChatMessages messages={messages} isLoading={isLoading} />
         ) : (
-          <EmptyState />
+          <EmptyState append={append} />
         )}
       </div>
       <div className="p-4 md:p-6 bg-background border-t w-full max-w-2xl mx-auto">
