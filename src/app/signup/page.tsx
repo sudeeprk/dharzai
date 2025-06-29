@@ -22,20 +22,20 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
-
       if (res.ok) {
         toast({
-            title: 'Signup Successful',
-            description: 'You can now log in with your credentials.',
+          title: 'Signup Successful',
+          description: 'You can now log in with your credentials.',
         });
         router.push('/login');
       } else {
         const data = await res.json();
+        console.log(data)
         toast({
             variant: 'destructive',
             title: 'Signup Failed',
