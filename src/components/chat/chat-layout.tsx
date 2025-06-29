@@ -6,7 +6,7 @@ import type { User } from 'next-auth';
 import { useRouter } from 'next/navigation';
 import { ChatMessages } from './chat-messages';
 import { ChatInput } from './chat-input';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { Sparkles, Bot } from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
@@ -37,13 +37,13 @@ const GuestHeader = () => (
 );
 
 const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center h-full text-center">
+  <div className="flex flex-col items-center justify-center h-full text-center p-4">
     <Bot className="w-16 h-16 mb-4 text-primary" />
     <h2 className="text-2xl font-semibold mb-2">How can I help you today?</h2>
     <p className="text-muted-foreground mb-8">
       Ask me anything! I can help you with a variety of tasks.
     </p>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-md">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
       <Button variant="outline" className="h-auto text-left py-3">
         <p className="font-semibold">Explain quantum computing</p>
         <p className="text-sm text-muted-foreground">in simple terms</p>
@@ -71,6 +71,8 @@ export function ChatLayout({
 }: ChatLayoutProps) {
   const router = useRouter();
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, data } =
     useChat({
@@ -78,6 +80,7 @@ export function ChatLayout({
       initialMessages,
       body: {
         chatId: initialChatId,
+        file: filePreview,
       },
       onResponse: (response) => {
         if (response.status === 401) {
@@ -86,6 +89,8 @@ export function ChatLayout({
         }
       },
       onFinish: () => {
+        setFile(null);
+        setFilePreview(null);
         if (!initialChatId && user) {
           const newChatId = (data as any[])?.find(d => d.chatId)?.chatId;
           if (newChatId) {
@@ -95,6 +100,23 @@ export function ChatLayout({
         }
       },
     });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const onFileRemove = () => {
+    setFile(null);
+    setFilePreview(null);
+  };
   
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -102,11 +124,10 @@ export function ChatLayout({
     }
   }, [messages]);
 
-
   return (
     <div className="relative flex flex-col h-full">
        {!user && <GuestHeader />}
-       <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
+       <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
         {messages.length > 0 ? (
           <ChatMessages messages={messages} isLoading={isLoading} />
         ) : (
@@ -119,6 +140,9 @@ export function ChatLayout({
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           isLoading={isLoading}
+          file={file}
+          onFileChange={handleFileChange}
+          onFileRemove={onFileRemove}
         />
         <p className="text-center text-xs text-muted-foreground mt-2">
             Dharz AI can make mistakes. Consider checking important information.
