@@ -141,6 +141,7 @@ export function ChatLayout({
           handleSubmit={handleSubmit}
           isLoading={isLoading}
           file={file}
+          filePreview={filePreview}
           onFileChange={handleFileChange}
           onFileRemove={onFileRemove}
         />

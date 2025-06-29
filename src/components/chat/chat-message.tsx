@@ -2,11 +2,10 @@ import type { Message } from 'ai/react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { User, Bot } from 'lucide-react';
-import { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-export const ChatMessage = memo(({ message }: { message: Message }) => {
+export function ChatMessage({ message }: { message: Message }) {
   const isAssistant = message.role === 'assistant';
 
   return (
@@ -43,6 +42,6 @@ export const ChatMessage = memo(({ message }: { message: Message }) => {
       )}
     </div>
   );
-});
+}
 
 ChatMessage.displayName = 'ChatMessage';

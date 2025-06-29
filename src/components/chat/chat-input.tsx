@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import * as React from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import Image from 'next/image';
 
 interface ChatInputProps {
   input: string;
@@ -11,6 +12,7 @@ interface ChatInputProps {
   isLoading: boolean;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   file: File | null;
+  filePreview: string | null;
   onFileRemove: () => void;
 }
 
@@ -21,6 +23,7 @@ export function ChatInput({
   isLoading,
   onFileChange,
   file,
+  filePreview,
   onFileRemove,
 }: ChatInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -49,14 +52,19 @@ export function ChatInput({
       onSubmit={handleSubmit}
       className="relative flex w-full flex-col items-start gap-2"
     >
-      {file && (
-        <div className="flex items-center gap-2 rounded-md bg-secondary px-3 py-1 text-sm">
-          <span>{file.name}</span>
+      {filePreview && (
+        <div className="relative w-24 h-24 rounded-md overflow-hidden border">
+          <Image
+            src={filePreview}
+            alt="Image preview"
+            fill
+            className="object-cover"
+          />
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
+            className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/50 text-white hover:bg-black/75"
             onClick={onFileRemove}
           >
             <X className="h-4 w-4" />
