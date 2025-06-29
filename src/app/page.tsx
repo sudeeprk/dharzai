@@ -12,12 +12,20 @@ export default async function Home() {
     ? await prisma.chat.findMany({
         where: { userId: user.id },
         orderBy: { createdAt: 'desc' },
+        include: {
+          messages: {
+            take: 1,
+            orderBy: {
+              createdAt: 'asc',
+            },
+          },
+        },
       })
     : [];
 
   return (
     <main className="flex h-screen bg-background">
-      <Sidebar user={user} chats={chats} />
+      {user && <Sidebar user={user} chats={chats} />}
       <div className="flex flex-col flex-1">
         <ChatLayout user={user} initialMessages={[]} />
       </div>

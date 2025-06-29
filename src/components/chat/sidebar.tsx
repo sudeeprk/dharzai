@@ -30,7 +30,7 @@ import { ThemeToggle } from '../theme-toggle';
 
 interface SidebarProps {
   user: User | null;
-  chats: Chat[];
+  chats: (Chat & { messages: { content: string }[] })[];
   activeChatId?: string;
 }
 

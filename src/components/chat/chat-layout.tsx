@@ -9,6 +9,8 @@ import { ChatInput } from './chat-input';
 import { useEffect, useRef } from 'react';
 import { Button } from '../ui/button';
 import { Sparkles, Bot } from 'lucide-react';
+import { ThemeToggle } from '../theme-toggle';
+import Link from 'next/link';
 
 interface ChatLayoutProps {
   initialMessages?: Message[];
@@ -83,9 +85,28 @@ export function ChatLayout({
     </div>
   );
 
+  const GuestHeader = () => (
+    <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex justify-center items-center gap-2">
+            <Sparkles className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold">Dharz AI</h1>
+        </div>
+        <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button asChild variant="ghost">
+                <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+                <Link href="/signup">Sign Up</Link>
+            </Button>
+        </div>
+    </div>
+  );
+
 
   return (
     <div className="relative flex flex-col h-full">
+       {!user && <GuestHeader />}
        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
         {messages.length > 0 ? (
           <ChatMessages messages={messages} isLoading={isLoading} />
