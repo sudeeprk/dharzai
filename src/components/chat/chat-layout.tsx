@@ -8,18 +8,29 @@ import { ChatInput } from './chat-input';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'next-auth/react';
 import { useState, useEffect, useRef } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
+import { LogOut, User as UserIcon } from 'lucide-react';
 
 interface ChatLayoutProps {
   initialMessages?: Message[];
   chatId?: string;
-  user: User;
+  user: User | null;
 }
 
 export function ChatLayout({ initialMessages, chatId: initialChatId, user }: ChatLayoutProps) {
   const [chatId, setChatId] = useState(initialChatId);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, data } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, data, setMessages } =
     useChat({
       api: '/api/chat',
       initialMessages,
@@ -27,7 +38,7 @@ export function ChatLayout({ initialMessages, chatId: initialChatId, user }: Cha
         chatId,
       },
       onFinish() {
-        if (!chatId) {
+        if (!chatId && user) {
           const newChatId = (data as any[])?.find(d => d.chatId)?.chatId;
           if (newChatId) {
             setChatId(newChatId);
@@ -43,7 +54,11 @@ export function ChatLayout({ initialMessages, chatId: initialChatId, user }: Cha
   }, [messages]);
 
   const handleNewChat = () => {
-    window.location.reload();
+    if (user) {
+        window.location.href = '/';
+    } else {
+        setMessages([]);
+    }
   };
 
   return (
@@ -51,9 +66,45 @@ export function ChatLayout({ initialMessages, chatId: initialChatId, user }: Cha
       <header className="bg-card border-b p-4 shadow-sm flex justify-between items-center">
         <h1 className="text-2xl font-bold font-headline">Dharz AI</h1>
         <div className="flex items-center gap-4">
-            <p className="text-sm text-muted-foreground hidden sm:block">Welcome, {user.name}</p>
             <Button variant="outline" size="sm" onClick={handleNewChat}>New Chat</Button>
-            <Button variant="outline" size="sm" onClick={() => signOut({ callbackUrl: '/login' })}>Logout</Button>
+            {user ? (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                            <Avatar className="h-8 w-8">
+                                <AvatarImage src={user.image || ''} alt={user.name || 'User'} />
+                                <AvatarFallback>
+                                    <UserIcon />
+                                </AvatarFallback>
+                            </Avatar>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">{user.name}</p>
+                            <p className="text-xs leading-none text-muted-foreground">
+                            {user.email}
+                            </p>
+                        </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Log out</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ) : (
+                <div className="flex items-center gap-2">
+                    <Button asChild variant="outline" size="sm">
+                        <Link href="/login">Login</Link>
+                    </Button>
+                    <Button asChild size="sm">
+                        <Link href="/signup">Sign Up</Link>
+                    </Button>
+                </div>
+            )}
         </div>
       </header>
       <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">

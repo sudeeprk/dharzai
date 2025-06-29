@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { Sparkles } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -66,9 +67,13 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-primary/20">
+      <Card className="w-full max-w-sm shadow-xl">
+        <CardHeader className="text-center">
+            <div className="flex justify-center items-center gap-2 mb-2">
+                <Sparkles className="h-6 w-6 text-primary" />
+                <h1 className="text-2xl font-bold">Dharz AI</h1>
+            </div>
           <CardTitle className="text-2xl">Sign Up</CardTitle>
           <CardDescription>
             Create an account to start chatting.
