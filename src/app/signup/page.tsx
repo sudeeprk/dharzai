@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
@@ -67,67 +66,65 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-primary/20">
-      <Card className="w-full max-w-sm shadow-xl">
-        <CardHeader className="text-center">
-            <div className="flex justify-center items-center gap-2 mb-2">
-                <Sparkles className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold">Dharz AI</h1>
-            </div>
-          <CardTitle className="text-2xl">Sign Up</CardTitle>
-          <CardDescription>
-            Create an account to start chatting.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Creating account...' : 'Create Account'}
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{' '}
-            <Link href="/login" className="underline">
-              Login
-            </Link>
+    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="flex justify-center items-center gap-2 mb-4">
+            <Sparkles className="h-7 w-7 text-primary" />
+            <h1 className="text-3xl font-bold">Dharz AI</h1>
           </div>
-        </CardContent>
-      </Card>
+          <h2 className="text-2xl font-bold tracking-tight">Create an account</h2>
+          <p className="text-sm text-muted-foreground">
+            Enter your details below to create your account
+          </p>
+        </div>
+        <form onSubmit={handleSubmit} className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="John Doe"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Create Account'}
+          </Button>
+        </form>
+        <div className="mt-4 text-center text-sm">
+          Already have an account?{' '}
+          <Link href="/login" className="underline font-medium">
+            Sign in
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
@@ -43,20 +42,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-primary/20">
-      <Card className="w-full max-w-sm shadow-xl">
-        <CardHeader className="text-center">
-            <div className="flex justify-center items-center gap-2 mb-2">
-                <Sparkles className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold">Dharz AI</h1>
+    <div className="flex min-h-screen w-full items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col items-center text-center mb-8">
+            <div className="flex justify-center items-center gap-2 mb-4">
+                <Sparkles className="h-7 w-7 text-primary" />
+                <h1 className="text-3xl font-bold">Dharz AI</h1>
             </div>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-4">
+            <h2 className="text-2xl font-bold tracking-tight">Welcome back</h2>
+            <p className="text-sm text-muted-foreground">
+                Enter your email to sign in to your account
+            </p>
+        </div>
+        <form onSubmit={handleSubmit} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -81,17 +79,16 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Logging in...' : 'Sign In'}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             Don't have an account?{' '}
-            <Link href="/signup" className="underline">
+            <Link href="/signup" className="underline font-medium">
               Sign up
             </Link>
           </div>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

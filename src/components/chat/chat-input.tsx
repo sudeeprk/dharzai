@@ -16,12 +16,20 @@ export function ChatInput({
   handleSubmit,
   isLoading,
 }: ChatInputProps) {
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  React.useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [input]);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       const form = e.currentTarget.form;
       if (form) {
-        // Create a native event to submit
         const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
         form.dispatchEvent(submitEvent);
       }
@@ -31,21 +39,22 @@ export function ChatInput({
   return (
     <form
       onSubmit={handleSubmit}
-      className="relative flex w-full max-w-2xl mx-auto items-center"
+      className="relative flex w-full items-end"
     >
       <Textarea
+        ref={textareaRef}
         value={input}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Send a message..."
-        className="flex-1 resize-none pr-14 text-base rounded-full py-3 px-5 shadow-sm"
+        className="flex-1 resize-none pr-14 text-base rounded-xl py-3 px-4 shadow-sm max-h-48 overflow-y-auto"
         rows={1}
         disabled={isLoading}
       />
       <Button
         type="submit"
         size="icon"
-        className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full"
+        className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
         disabled={isLoading || !input.trim()}
         aria-label="Send message"
       >

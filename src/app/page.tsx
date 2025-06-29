@@ -1,37 +1,26 @@
 import { auth } from '@/auth';
-import { ChatLayout } from '@/components/chat/chat-layout';
-import { prisma } from '@/lib/db';
 import type { User } from 'next-auth';
+import { prisma } from '@/lib/db';
+import { Sidebar } from '@/components/chat/sidebar';
+import { ChatLayout } from '@/components/chat/chat-layout';
 
 export default async function Home() {
   const session = await auth();
   const user = session?.user as User | null;
 
-  let chat = null;
-  if (user?.id) {
-    // Fetch the most recent chat to continue, or pass null to start a new one.
-    chat = await prisma.chat.findFirst({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        messages: {
-          orderBy: {
-            createdAt: 'asc',
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
+  const chats = user?.id
+    ? await prisma.chat.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'desc' },
+      })
+    : [];
 
-  const initialMessages = chat?.messages.map(m => ({
-    id: m.id,
-    content: m.content,
-    role: m.role as 'user' | 'assistant',
-  })) || [];
-
-  return <ChatLayout initialMessages={initialMessages} chatId={chat?.id} user={user} />;
+  return (
+    <main className="flex h-screen bg-background">
+      <Sidebar user={user} chats={chats} />
+      <div className="flex flex-col flex-1">
+        <ChatLayout user={user} initialMessages={[]} />
+      </div>
+    </main>
+  );
 }
