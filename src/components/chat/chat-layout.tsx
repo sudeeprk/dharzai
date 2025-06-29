@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import type { Message } from 'ai/react';
+import type { Message as VercelChatMessage } from 'ai/react';
 import type { User } from 'next-auth';
 import { useRouter } from 'next/navigation';
 import { ChatMessages } from './chat-messages';
@@ -13,7 +13,7 @@ import { ThemeToggle } from '../theme-toggle';
 import Link from 'next/link';
 
 interface ChatLayoutProps {
-  initialMessages?: Message[];
+  initialMessages?: VercelChatMessage[];
   chatId?: string;
   user: User | null;
 }
@@ -44,7 +44,7 @@ const promptSuggestions = [
 ];
 
 interface EmptyStateProps {
-    append: (message: Omit<Message, 'id'>) => void;
+    append: (message: Omit<VercelChatMessage, 'id'>) => void;
 }
   
 const EmptyState = ({ append }: EmptyStateProps) => (
@@ -135,7 +135,7 @@ export function ChatLayout({
        {!user && <GuestHeader />}
        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
         {messages.length > 0 ? (
-          <ChatMessages messages={messages} isLoading={isLoading} />
+          <ChatMessages messages={messages} />
         ) : (
           <EmptyState append={append} />
         )}
