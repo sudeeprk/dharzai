@@ -1,25 +1,18 @@
-import type { Message } from '@/lib/types';
+import type { Message } from 'ai/react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { User, Sparkles } from 'lucide-react';
 
 interface ChatMessageProps {
   message: Message;
-  isLoading?: boolean;
 }
 
-function LoadingDots() {
-    return (
-        <div className="flex items-center space-x-1">
-            <div className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-            <div className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="h-2 w-2 bg-muted-foreground rounded-full animate-bounce"></div>
-        </div>
-    );
-}
-
-export function ChatMessage({ message, isLoading = false }: ChatMessageProps) {
+export function ChatMessage({ message }: ChatMessageProps) {
   const isAssistant = message.role === 'assistant';
+
+  // The Vercel AI SDK's useChat hook provides streaming content.
+  // The loading state is implicitly handled by the text streaming in.
+  // We no longer need the explicit "loading dots" indicator.
 
   return (
     <div
@@ -41,10 +34,10 @@ export function ChatMessage({ message, isLoading = false }: ChatMessageProps) {
             : 'bg-primary/95 text-primary-foreground'
         )}
       >
-        {isLoading 
-            ? <LoadingDots /> 
-            : <div className="prose prose-sm max-w-none text-inherit prose-p:my-0" dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} />
-        }
+        <div 
+          className="prose prose-sm max-w-none text-inherit prose-p:my-0" 
+          dangerouslySetInnerHTML={{ __html: message.content.replace(/\n/g, '<br />') }} 
+        />
       </div>
     </div>
   );

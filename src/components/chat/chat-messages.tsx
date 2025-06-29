@@ -1,4 +1,4 @@
-import type { Message } from '@/lib/types';
+import type { Message } from 'ai/react';
 import { ChatMessage } from './chat-message';
 
 interface ChatMessagesProps {
@@ -6,7 +6,7 @@ interface ChatMessagesProps {
   isLoading: boolean;
 }
 
-export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
+export function ChatMessages({ messages }: ChatMessagesProps) {
   return (
     <div className="space-y-6">
       {messages.map((message) => (
@@ -14,14 +14,6 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
           <ChatMessage message={message} />
         </div>
       ))}
-      {isLoading && (
-        <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
-          <ChatMessage
-            message={{ id: 'loading', role: 'assistant', content: '' }}
-            isLoading={true}
-          />
-        </div>
-      )}
     </div>
   );
 }

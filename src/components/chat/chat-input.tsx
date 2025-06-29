@@ -1,29 +1,30 @@
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import * as React from 'react';
 
 interface ChatInputProps {
   input: string;
-  setInput: (value: string) => void;
-  handleSendMessage: () => void;
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
 }
 
 export function ChatInput({
   input,
-  setInput,
-  handleSendMessage,
+  handleInputChange,
+  handleSubmit,
   isLoading,
 }: ChatInputProps) {
-  const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
-    handleSendMessage();
-  };
-  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit();
+      const form = e.currentTarget.form;
+      if (form) {
+        // Create a native event to submit
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        form.dispatchEvent(submitEvent);
+      }
     }
   };
 
@@ -34,7 +35,7 @@ export function ChatInput({
     >
       <Textarea
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Send a message..."
         className="flex-1 resize-none pr-14 text-base rounded-full py-3 px-5 shadow-sm"
