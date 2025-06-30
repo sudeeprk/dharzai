@@ -4,16 +4,10 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import Tavily from "tavily-js";
 
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const tavily = process.env.TAVILY_API_KEY
-  ? new Tavily(process.env.TAVILY_API_KEY as string)
-  : null;
-
 
 const baseSystemPrompt = `You are Dharz AI, an intuitive and friendly AI assistant. 
 - You are helpful, creative, clever, and very friendly.
@@ -27,7 +21,7 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     const userId = session?.user?.id;
 
-    if (isWebSearchEnabled && !tavily) {
+    if (isWebSearchEnabled && !process.env.TAVILY_API_KEY) {
         return NextResponse.json(
           { message: "Tavily API key not configured." },
           { status: 500 }
@@ -70,15 +64,35 @@ export async function POST(req: NextRequest) {
 
     const userMessageToSave = messages[messages.length - 1].content;
 
-    const searchTool = isWebSearchEnabled && tavily ? {
+    const searchTool = isWebSearchEnabled ? {
         searchTheWeb: tool({
             description:
             "Searches the web for the user's query. Use this for any questions about recent events, current affairs, or information not in your training data.",
             parameters: z.object({
-            query: z.string().describe("The search query to use."),
+                query: z.string().describe("The search query to use."),
             }),
             execute: async ({ query }) => {
-                const searchResult = await tavily.search(query, { max_results: 5, include_raw_content: false });
+                const apiKey = process.env.TAVILY_API_KEY;
+                const response = await fetch('https://api.tavily.com/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        api_key: apiKey,
+                        query,
+                        max_results: 5,
+                        search_depth: "basic",
+                        include_raw_content: false,
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Tavily search failed with status: ${response.status}`);
+                }
+                
+                const searchResult = await response.json();
+                
                 return searchResult.results.map((r: any) => ({
                     title: r.title,
                     url: r.url,
