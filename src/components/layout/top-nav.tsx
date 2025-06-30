@@ -46,7 +46,8 @@ export function TopNav({ user, chats }: TopNavProps) {
   ];
 
   const handleNavigate = (href: string) => {
-    router.push(href);
+    console.log("Navigating to:", href);
+    window.location.href = href;
   };
 
   const getActiveTab = () => {
