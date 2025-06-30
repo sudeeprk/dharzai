@@ -1,12 +1,19 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { CoreMessage, streamText, createDataStream } from "ai";
+import { CoreMessage, streamText, tool } from "ai";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import Tavily from "tavily-js";
 
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const tavily = process.env.TAVILY_API_KEY
+  ? new Tavily(process.env.TAVILY_API_KEY as string)
+  : null;
+
 
 const baseSystemPrompt = `You are Dharz AI, an intuitive and friendly AI assistant. 
 - You are helpful, creative, clever, and very friendly.
@@ -20,19 +27,30 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     const userId = session?.user?.id;
 
+    if (isWebSearchEnabled && !tavily) {
+        return NextResponse.json(
+          { message: "Tavily API key not configured." },
+          { status: 500 }
+        );
+      }
+
     let systemPrompt = baseSystemPrompt;
     if (isWebSearchEnabled) {
-      // This is a placeholder for actual web search integration.
-      // In a real implementation, you would use a search tool/API here
-      // to fetch real-time data and inject it into the prompt.
-      systemPrompt += `\n\n- Web search is enabled. You can use real-time information to answer the user's query. Today's date is ${new Date().toLocaleDateString()}.`;
+      systemPrompt += `\n\n- Web search is enabled. When the user asks a question that requires up-to-date information or knowledge beyond your training data, you must use the 'searchTheWeb' tool to find relevant real-time information. Base your primary response on the information retrieved from the web search. Today's date is ${new Date().toLocaleDateString()}.`;
     }
 
-    const coreMessages: CoreMessage[] = messages.map(
-      (msg: { role: "user" | "assistant"; content: string }) => ({
-        role: msg.role,
-        content: msg.content,
-      })
+    const coreMessages: CoreMessage[] = messages.map((msg: any): CoreMessage => {
+        // The 'content' of a tool message is a stringified JSON array of tool results.
+        // We need to parse it before sending it to the Vercel AI SDK.
+        if (msg.role === 'tool') {
+          return {
+            role: 'tool',
+            content: JSON.parse(msg.content),
+            tool_call_id: msg.name // useChat hook puts toolCallId in the 'name' field for tool messages
+          };
+        }
+        return msg as CoreMessage;
+      }
     );
 
     if (file && coreMessages.length > 0) {
@@ -52,10 +70,30 @@ export async function POST(req: NextRequest) {
 
     const userMessageToSave = messages[messages.length - 1].content;
 
+    const searchTool = isWebSearchEnabled && tavily ? {
+        searchTheWeb: tool({
+            description:
+            "Searches the web for the user's query. Use this for any questions about recent events, current affairs, or information not in your training data.",
+            parameters: z.object({
+            query: z.string().describe("The search query to use."),
+            }),
+            execute: async ({ query }) => {
+                const searchResult = await tavily.search(query, { max_results: 5, include_raw_content: false });
+                return searchResult.results.map((r: any) => ({
+                    title: r.title,
+                    url: r.url,
+                    content: r.content,
+                }));
+            },
+        }),
+    } : undefined;
+
+
     if (!userId) {
       const result = await streamText({
         model: openai("gpt-4o"),
         messages: allMessages,
+        tools: searchTool,
       });
 
       return result.toDataStreamResponse();
@@ -65,7 +103,7 @@ export async function POST(req: NextRequest) {
     if (clientChatId) {
       chat = await prisma.chat.upsert({
         where: { id: clientChatId },
-        create: { userId },
+        create: { userId, id: clientChatId },
         update: {},
         select: { id: true },
       });
@@ -86,6 +124,7 @@ export async function POST(req: NextRequest) {
     const result = await streamText({
       model: openai("gpt-4o"),
       messages: allMessages,
+      tools: searchTool,
       onFinish: async ({ text }) => {
         await prisma.message.create({
           data: {

@@ -49,7 +49,6 @@
     "mongodb": "^6.8.0",
     "next": "15.3.3",
     "next-auth": "^5.0.0-beta.19",
-    "next-themes": "^0.3.0",
     "patch-package": "^8.0.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
@@ -60,6 +59,7 @@
     "remark-gfm": "^4.0.0",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "tavily-js": "github:tavily-ai/tavily-js",
     "uuid": "^9.0.1",
     "zod": "^3.24.2"
   },
