@@ -1,6 +1,6 @@
-import { auth } from '@/auth';
-import type { User } from 'next-auth';
-import { Header } from './header';
+import { auth } from "@/auth";
+import type { User } from "next-auth";
+import { Header } from "./header";
 
 interface AppLayoutProps {
   children: React.ReactNode;

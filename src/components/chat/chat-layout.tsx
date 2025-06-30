@@ -8,10 +8,7 @@ import { ChatMessages } from "./chat-messages";
 import { ChatInput } from "./chat-input";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { Sparkles, Bot, Search } from "lucide-react";
-import Link from "next/link";
-import { Label } from "../ui/label";
-import { Switch } from "../ui/switch";
+import { Bot, Search } from "lucide-react";
 
 const promptSuggestions = [
   { title: "Explain quantum computing", subtitle: "in simple terms" },
@@ -101,7 +98,7 @@ export function ChatLayout({
     onFinish: (fin) => {
       setFile(null);
       setFilePreview(null);
-      if(!currentChatId) {
+      if (!currentChatId) {
         router.refresh();
       }
     },
@@ -146,7 +143,7 @@ export function ChatLayout({
     isLoading &&
     isWebSearchEnabled &&
     messages.length > 0 &&
-    messages[messages.length - 1]?.role === 'user';
+    messages[messages.length - 1]?.role === "user";
 
   return (
     <div className="relative flex flex-col h-full">
@@ -182,8 +179,8 @@ export function ChatLayout({
           isWebSearchEnabled={isWebSearchEnabled}
           onWebSearchChange={setIsWebSearchEnabled}
         />
-        <p className="text-center text-xs text-muted-foreground pt-2">
-            Dharz AI can make mistakes. Consider checking important information.
+        <p className="hidden md:block text-center text-xs text-muted-foreground pt-2">
+          Dharz AI can make mistakes. Consider checking important information.
         </p>
       </div>
     </div>
