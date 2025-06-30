@@ -26,7 +26,6 @@ interface EmptyStateProps {
 
 const EmptyState = ({ append }: EmptyStateProps) => (
   <div className="flex flex-col items-center justify-center h-full text-center p-4">
-    <Bot className="w-16 h-16 mb-4 text-primary" />
     <h2 className="text-2xl font-semibold mb-2">How can I help you today?</h2>
     <p className="text-muted-foreground mb-8">
       Ask me anything! I can help you with a variety of tasks.

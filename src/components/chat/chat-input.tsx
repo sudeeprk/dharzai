@@ -1,16 +1,24 @@
-import { ArrowUp, Paperclip, X, Square, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import * as React from 'react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
-import Image from 'next/image';
-import { cn } from '@/lib/utils';
-import { Label } from '../ui/label';
-import { Switch } from '../ui/switch';
+import { ArrowUp, Paperclip, X, Square, Search, Globe2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import * as React from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { IoIosGlobe } from "react-icons/io";
 
 interface ChatInputProps {
   input: string;
-  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => void;
+  handleInputChange: (
+    e:
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLInputElement>
+  ) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
   stop: () => void;
@@ -40,17 +48,20 @@ export function ChatInput({
 
   React.useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [input]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       const form = e.currentTarget.form;
       if (form && !isLoading) {
-        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        const submitEvent = new Event("submit", {
+          bubbles: true,
+          cancelable: true,
+        });
         form.dispatchEvent(submitEvent);
       }
     }
@@ -89,49 +100,62 @@ export function ChatInput({
           accept="image/*"
         />
         <div className="absolute left-2 bottom-1.5 flex items-center gap-1">
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 rounded-lg"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={isLoading}
-                            aria-label="Attach file"
-                        >
-                            <Paperclip className="h-5 w-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Attach an image</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className={cn(
-                                "h-9 w-9 rounded-lg",
-                                isWebSearchEnabled ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
-                            )}
-                            onClick={() => onWebSearchChange(!isWebSearchEnabled)}
-                            disabled={isLoading}
-                            aria-label="Toggle web search"
-                        >
-                            <Search className="h-5 w-5" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>{isWebSearchEnabled ? 'Disable' : 'Enable'} Web Search</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-lg"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isLoading}
+                  aria-label="Attach file"
+                >
+                  <Paperclip className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Attach an image</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-9 w-9 rounded-lg transition-all duration-200 ease-in-out",
+                    isWebSearchEnabled
+                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  )}
+                  onClick={() => onWebSearchChange(!isWebSearchEnabled)}
+                  disabled={isLoading}
+                  aria-label="Toggle web search"
+                >
+                  <IoIosGlobe
+                    className={cn(
+                      "h-5 w-5 transition-transform duration-200",
+                      isWebSearchEnabled && "scale-110"
+                    )}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="flex items-center gap-2">
+                  <IoIosGlobe className="h-4 w-4" />
+                  <span>
+                    {isWebSearchEnabled ? "Disable" : "Enable"} Web Search
+                  </span>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <Textarea
@@ -145,25 +169,25 @@ export function ChatInput({
           disabled={isLoading}
         />
         {isLoading ? (
-            <Button
-                type="button"
-                onClick={stop}
-                size="icon"
-                className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
-                aria-label="Stop generation"
-            >
-                <Square className="h-5 w-5" />
-            </Button>
+          <Button
+            type="button"
+            onClick={stop}
+            size="icon"
+            className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
+            aria-label="Stop generation"
+          >
+            <Square className="h-5 w-5" />
+          </Button>
         ) : (
-            <Button
-                type="submit"
-                size="icon"
-                className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
-                disabled={!input.trim() && !file}
-                aria-label="Send message"
-            >
-                <ArrowUp className="h-5 w-5" />
-            </Button>
+          <Button
+            type="submit"
+            size="icon"
+            className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
+            disabled={!input.trim() && !file}
+            aria-label="Send message"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </Button>
         )}
       </div>
     </form>

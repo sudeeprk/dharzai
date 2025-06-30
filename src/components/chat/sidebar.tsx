@@ -71,7 +71,7 @@ export function Sidebar({ user, chats, activeChatId }: SidebarProps) {
   return (
     <div
       className={cn(
-        "hidden md:flex flex-col bg-secondary/50 border-r transition-all duration-300",
+        "hidden md:flex flex-col bg-secondary/50 border-r transition-all duration-300 z-50 fixed top-0 left-0 h-svh",
         isCollapsed ? "w-16" : "w-64"
       )}
     >

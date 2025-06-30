@@ -1,9 +1,9 @@
-import { auth } from '@/auth';
-import type { User } from 'next-auth';
-import { prisma } from '@/lib/db';
-import { Sidebar } from '@/components/chat/sidebar';
-import { ChatLayout } from '@/components/chat/chat-layout';
-import { AppLayout } from '@/components/layout/app-layout';
+import { auth } from "@/auth";
+import type { User } from "next-auth";
+import { prisma } from "@/lib/db";
+import { Sidebar } from "@/components/chat/sidebar";
+import { ChatLayout } from "@/components/chat/chat-layout";
+import { AppLayout } from "@/components/layout/app-layout";
 
 export default async function Home() {
   const session = await auth();
@@ -12,12 +12,12 @@ export default async function Home() {
   const chats = user?.id
     ? await prisma.chat.findMany({
         where: { userId: user.id },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         include: {
           messages: {
             take: 1,
             orderBy: {
-              createdAt: 'asc',
+              createdAt: "asc",
             },
           },
         },
@@ -26,7 +26,7 @@ export default async function Home() {
 
   return (
     <AppLayout>
-      <main className="flex h-[calc(100vh-100px)] md:h-[calc(100vh-64px)] bg-background">
+      <main className="flex h-svh md:min-h-screen bg-background">
         {user && <Sidebar user={user} chats={chats} />}
         <div className="flex flex-col flex-1">
           <ChatLayout user={user} initialMessages={[]} />
