@@ -8,7 +8,7 @@ const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const systemPrompt = `You are Dharz AI, an intuitive and friendly AI assistant. 
+const baseSystemPrompt = `You are Dharz AI, an intuitive and friendly AI assistant. 
 - You are helpful, creative, clever, and very friendly.
 - You should provide informative and visually appealing responses.
 - You must use markdown for all of your responses, including headings, lists, tables, and code blocks when appropriate.
@@ -16,9 +16,17 @@ const systemPrompt = `You are Dharz AI, an intuitive and friendly AI assistant.
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, chatId: clientChatId, file } = await req.json();
+    const { messages, chatId: clientChatId, file, isWebSearchEnabled } = await req.json();
     const session = await auth();
     const userId = session?.user?.id;
+
+    let systemPrompt = baseSystemPrompt;
+    if (isWebSearchEnabled) {
+      // This is a placeholder for actual web search integration.
+      // In a real implementation, you would use a search tool/API here
+      // to fetch real-time data and inject it into the prompt.
+      systemPrompt += `\n\n- Web search is enabled. You can use real-time information to answer the user's query. Today's date is ${new Date().toLocaleDateString()}.`;
+    }
 
     const coreMessages: CoreMessage[] = messages.map(
       (msg: { role: "user" | "assistant"; content: string }) => ({
@@ -89,7 +97,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Create a custom response that includes the chatId
     const response = result.toDataStreamResponse();
     response.headers.set("X-Chat-ID", chat.id);
     return response;

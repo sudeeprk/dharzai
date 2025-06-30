@@ -1,4 +1,4 @@
-import { ArrowUp, Paperclip, X } from 'lucide-react';
+import { ArrowUp, Paperclip, X, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import * as React from 'react';
@@ -10,6 +10,7 @@ interface ChatInputProps {
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
+  stop: () => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   file: File | null;
   filePreview: string | null;
@@ -21,6 +22,7 @@ export function ChatInput({
   handleInputChange,
   handleSubmit,
   isLoading,
+  stop,
   onFileChange,
   file,
   filePreview,
@@ -40,7 +42,7 @@ export function ChatInput({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       const form = e.currentTarget.form;
-      if (form) {
+      if (form && !isLoading) {
         const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
         form.dispatchEvent(submitEvent);
       }
@@ -110,15 +112,27 @@ export function ChatInput({
           rows={1}
           disabled={isLoading}
         />
-        <Button
-          type="submit"
-          size="icon"
-          className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
-          disabled={isLoading || (!input.trim() && !file)}
-          aria-label="Send message"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </Button>
+        {isLoading ? (
+            <Button
+                type="button"
+                onClick={stop}
+                size="icon"
+                className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
+                aria-label="Stop generation"
+            >
+                <Square className="h-5 w-5" />
+            </Button>
+        ) : (
+            <Button
+                type="submit"
+                size="icon"
+                className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
+                disabled={!input.trim() && !file}
+                aria-label="Send message"
+            >
+                <ArrowUp className="h-5 w-5" />
+            </Button>
+        )}
       </div>
     </form>
   );

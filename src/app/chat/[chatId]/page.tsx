@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { Sidebar } from "@/components/chat/sidebar";
 import { ChatLayout } from "@/components/chat/chat-layout";
 import { notFound, redirect } from "next/navigation";
+import { AppLayout } from "@/components/layout/app-layout";
 
 interface ChatPageProps {
   params: Promise<{
@@ -33,7 +34,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
   const currentChat = await prisma.chat.findUnique({
     where: {
       id: (await params).chatId,
-      userId: user.id, // Ensure user can only access their own chats
+      userId: user.id,
     },
     include: {
       messages: {
@@ -55,15 +56,17 @@ export default async function ChatPage({ params }: ChatPageProps) {
   }));
 
   return (
-    <main className="flex h-screen bg-background">
-      <Sidebar user={user} chats={chats} activeChatId={(await params).chatId} />
-      <div className="flex flex-col flex-1">
-        <ChatLayout
-          user={user}
-          initialMessages={initialMessages}
-          chatId={(await params).chatId}
-        />
-      </div>
-    </main>
+    <AppLayout>
+        <main className="flex h-[calc(100vh-56px)] bg-background">
+            <Sidebar user={user} chats={chats} activeChatId={(await params).chatId} />
+            <div className="flex flex-col flex-1">
+                <ChatLayout
+                user={user}
+                initialMessages={initialMessages}
+                chatId={(await params).chatId}
+                />
+            </div>
+        </main>
+    </AppLayout>
   );
 }

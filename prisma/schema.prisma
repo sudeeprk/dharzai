@@ -1,27 +1,24 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-}
 
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String?
-  email     String?  @unique
-  password  String?
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
   emailVerified DateTime?
-  image     String?
-  accounts  Account[]
-  sessions  Session[]
-  chats     Chat[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  image         String?
+  password      String?
+  role          UserRole  @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+  chats         Chat[]
 }
 
 model Account {
@@ -74,7 +71,12 @@ model Message {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   chatId    String   @db.ObjectId
   chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  role      String // "user" or "assistant"
+  role      String
   content   String
   createdAt DateTime @default(now())
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }

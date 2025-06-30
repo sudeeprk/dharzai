@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import type { NextAuthConfig } from 'next-auth';
+import type { NextAuthConfig, User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { prisma } from './lib/db';
 import bcrypt from 'bcryptjs';
@@ -42,9 +42,17 @@ export const authConfig = {
   ],
   session: { strategy: 'jwt' },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+        token.role = (user as User & { role: 'USER' | 'ADMIN' }).role;
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
+        session.user.role = token.role as 'USER' | 'ADMIN';
       }
       return session;
     },
