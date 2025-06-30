@@ -26,7 +26,7 @@ export default async function Home() {
 
   return (
     <AppLayout>
-      <main className="flex h-[calc(100vh-56px)] bg-background">
+      <main className="flex h-[calc(100vh-100px)] md:h-[calc(100vh-64px)] bg-background">
         {user && <Sidebar user={user} chats={chats} />}
         <div className="flex flex-col flex-1">
           <ChatLayout user={user} initialMessages={[]} />
