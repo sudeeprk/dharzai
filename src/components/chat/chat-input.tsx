@@ -1,9 +1,12 @@
-import { ArrowUp, Paperclip, X, Square } from 'lucide-react';
+import { ArrowUp, Paperclip, X, Square, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import * as React from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
 
 interface ChatInputProps {
   input: string;
@@ -15,6 +18,8 @@ interface ChatInputProps {
   file: File | null;
   filePreview: string | null;
   onFileRemove: () => void;
+  isWebSearchEnabled: boolean;
+  onWebSearchChange: (enabled: boolean) => void;
 }
 
 export function ChatInput({
@@ -27,6 +32,8 @@ export function ChatInput({
   file,
   filePreview,
   onFileRemove,
+  isWebSearchEnabled,
+  onWebSearchChange,
 }: ChatInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -81,26 +88,51 @@ export function ChatInput({
           className="hidden"
           accept="image/*"
         />
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute left-2 bottom-1.5 h-9 w-9 rounded-lg"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isLoading}
-                        aria-label="Attach file"
-                    >
-                        <Paperclip className="h-5 w-5" />
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>Attach an image</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
+        <div className="absolute left-2 bottom-1.5 flex items-center gap-1">
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9 rounded-lg"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isLoading}
+                            aria-label="Attach file"
+                        >
+                            <Paperclip className="h-5 w-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Attach an image</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className={cn(
+                                "h-9 w-9 rounded-lg",
+                                isWebSearchEnabled ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                            )}
+                            onClick={() => onWebSearchChange(!isWebSearchEnabled)}
+                            disabled={isLoading}
+                            aria-label="Toggle web search"
+                        >
+                            <Search className="h-5 w-5" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{isWebSearchEnabled ? 'Disable' : 'Enable'} Web Search</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        </div>
 
         <Textarea
           ref={textareaRef}
@@ -108,7 +140,7 @@ export function ChatInput({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="Send a message..."
-          className="flex-1 resize-none pl-14 pr-14 text-base rounded-xl py-3 px-4 shadow-sm max-h-48 overflow-y-auto"
+          className="flex-1 resize-none pl-24 pr-14 text-base rounded-xl py-3 px-4 shadow-sm max-h-48 overflow-y-auto"
           rows={1}
           disabled={isLoading}
         />

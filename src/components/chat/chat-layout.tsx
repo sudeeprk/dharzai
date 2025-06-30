@@ -165,20 +165,12 @@ export function ChatLayout({
           filePreview={filePreview}
           onFileChange={handleFileChange}
           onFileRemove={onFileRemove}
+          isWebSearchEnabled={isWebSearchEnabled}
+          onWebSearchChange={setIsWebSearchEnabled}
         />
-        <div className="flex items-center justify-between mt-2">
-            <p className="text-center text-xs text-muted-foreground">
-                Dharz AI can make mistakes. Consider checking important information.
-            </p>
-            <div className="flex items-center space-x-2">
-                <Switch 
-                    id="web-search-toggle" 
-                    checked={isWebSearchEnabled}
-                    onCheckedChange={setIsWebSearchEnabled}
-                />
-                <Label htmlFor="web-search-toggle" className="text-xs">Web Search</Label>
-            </div>
-        </div>
+        <p className="text-center text-xs text-muted-foreground pt-2">
+            Dharz AI can make mistakes. Consider checking important information.
+        </p>
       </div>
     </div>
   );
