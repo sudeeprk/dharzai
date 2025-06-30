@@ -113,7 +113,7 @@ export function PlaceCard({ place }: { place: any }) {
       </CardContent>
 
       {place.googleMapsUri && (
-        <div className="absolute bottom-3 right-3 bg-white rounded-full p-1">
+        <div className="absolute bottom-3 right-3 bg-background rounded-full p-1">
           <Link href={place.googleMapsUri} target="_blank">
             <MapPin className="w-4 h-4 text-muted-foreground hover:text-primary" />
           </Link>

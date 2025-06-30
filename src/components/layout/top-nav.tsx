@@ -46,8 +46,7 @@ export function TopNav({ user, chats }: TopNavProps) {
   ];
 
   const handleNavigate = (href: string) => {
-    console.log("Navigating to:", href);
-    window.location.href = href;
+    router.push(href);
   };
 
   const getActiveTab = () => {
@@ -128,7 +127,7 @@ export function TopNav({ user, chats }: TopNavProps) {
                 <Button asChild className="hidden md:block">
                   <Link href="/signup">Sign Up</Link>
                 </Button>
-                <ThemeToggle className="hidden md:block" />
+                <ThemeToggle className="hidden md:block md:ml-2" />
               </div>
             </div>
           )}

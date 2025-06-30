@@ -182,7 +182,7 @@ export function MobileSidebar({
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <ThemeToggle />
+                  <ThemeToggle className="border px-1" />
                 </div>
                 <DropdownMenuContent
                   className="w-56 mb-2"
