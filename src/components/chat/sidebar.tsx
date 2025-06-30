@@ -168,32 +168,37 @@ export function Sidebar({ user, chats, activeChatId }: SidebarProps) {
       <div className="p-2 border-t">
         {user ? (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-full justify-start p-2 h-auto"
-              >
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={user.image || ""}
-                      alt={user.name || "User"}
-                    />
-                    <AvatarFallback>
-                      <UserIcon />
-                    </AvatarFallback>
-                  </Avatar>
-                  {!isCollapsed && (
-                    <div className="flex flex-col items-start text-left truncate">
-                      <span className="text-sm font-medium">{user.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {user.email}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </Button>
-            </DropdownMenuTrigger>
+            <div className="flex items-center gap-2 w-full justify-between">
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start p-2 h-auto"
+                >
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={user.image || ""}
+                        alt={user.name || "User"}
+                      />
+                      <AvatarFallback>
+                        <UserIcon />
+                      </AvatarFallback>
+                    </Avatar>
+                    {!isCollapsed && (
+                      <div className="flex flex-col items-start text-left truncate">
+                        <span className="text-sm font-medium ">
+                          {user.name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {user.email}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              {!isCollapsed && <ThemeToggle />}
+            </div>
             <DropdownMenuContent
               className="w-56 mb-2"
               align="start"

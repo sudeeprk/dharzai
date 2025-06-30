@@ -58,13 +58,15 @@ export default function SignupPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center text-center mb-8">
           <div className="flex justify-center items-center gap-2 mb-4">
-            <Image
-              src="/logo.png"
-              alt="Dharz AI"
-              width={1000}
-              height={100}
-              className="h-auto w-[150px] mr-2 rounded"
-            />
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="Dharz AI"
+                width={1000}
+                height={100}
+                className="h-auto w-[150px] mr-2 rounded"
+              />
+            </Link>
           </div>
           <h2 className="text-2xl font-bold tracking-tight">
             Create an account

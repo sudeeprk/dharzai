@@ -118,15 +118,17 @@ export function TopNav({ user, chats }: TopNavProps) {
           </div>
 
           {/* Right side controls */}
+
           {!user && (
             <div className="flex items-center gap-2">
-              <div className="hidden md:flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Button asChild variant="ghost">
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="hidden md:block">
                   <Link href="/signup">Sign Up</Link>
                 </Button>
+                <ThemeToggle className="hidden md:block" />
               </div>
             </div>
           )}

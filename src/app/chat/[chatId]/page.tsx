@@ -57,16 +57,20 @@ export default async function ChatPage({ params }: ChatPageProps) {
 
   return (
     <AppLayout>
-        <main className="flex h-[calc(100vh-100px)] md:h-[calc(100vh-64px)] bg-background">
-            <Sidebar user={user} chats={chats} activeChatId={(await params).chatId} />
-            <div className="flex flex-col flex-1">
-                <ChatLayout
-                user={user}
-                initialMessages={initialMessages}
-                chatId={(await params).chatId}
-                />
-            </div>
-        </main>
+      <main className="flex h-svh md:min-h-screen bg-background">
+        <Sidebar
+          user={user}
+          chats={chats}
+          activeChatId={(await params).chatId}
+        />
+        <div className="flex flex-col flex-1">
+          <ChatLayout
+            user={user}
+            initialMessages={initialMessages}
+            chatId={(await params).chatId}
+          />
+        </div>
+      </main>
     </AppLayout>
   );
 }
