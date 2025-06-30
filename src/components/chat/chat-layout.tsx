@@ -8,7 +8,7 @@ import { ChatMessages } from "./chat-messages";
 import { ChatInput } from "./chat-input";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { Sparkles, Bot } from "lucide-react";
+import { Sparkles, Bot, Search } from "lucide-react";
 import Link from "next/link";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
@@ -142,6 +142,12 @@ export function ChatLayout({
     }
   }, [messages]);
 
+  const showWebSearchStatus =
+    isLoading &&
+    isWebSearchEnabled &&
+    messages.length > 0 &&
+    messages[messages.length - 1]?.role === 'user';
+
   return (
     <div className="relative flex flex-col h-full">
       <div
@@ -149,7 +155,15 @@ export function ChatLayout({
         className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4"
       >
         {messages.length > 0 ? (
-          <ChatMessages messages={messages} />
+          <>
+            {showWebSearchStatus && (
+              <div className="flex items-center justify-center gap-2 text-muted-foreground animate-in fade-in duration-500">
+                <Search className="h-4 w-4 animate-spin" />
+                <span>Searching the web...</span>
+              </div>
+            )}
+            <ChatMessages messages={messages} />
+          </>
         ) : (
           <EmptyState append={append} />
         )}
