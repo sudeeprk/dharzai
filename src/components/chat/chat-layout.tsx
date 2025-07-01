@@ -16,8 +16,6 @@ const promptSuggestions = [
     subtitle: "for a 10 year old's birthday?",
   },
   { title: "Write a thank you note", subtitle: "to my interviewer" },
-  { title: "Plan a weekend trip", subtitle: "to a nearby city" },
-  { title: "Help me learn", subtitle: "a new programming language" },
 ];
 
 interface EmptyStateProps {
@@ -37,7 +35,7 @@ const EmptyState = ({ append }: EmptyStateProps) => (
     {/* Prompt suggestions positioned at bottom */}
     <div className="w-full px-4 pb-4 flex-shrink-0">
       {/* Desktop: Grid layout */}
-      <div className="hidden sm:grid sm:grid-cols-2 gap-4 w-full max-w-md mx-auto">
+      <div className="grid sm:grid-cols-2 gap-4 w-full max-w-md mx-auto">
         {promptSuggestions.map((prompt, index) => (
           <Button
             key={index}
@@ -54,28 +52,6 @@ const EmptyState = ({ append }: EmptyStateProps) => (
             <p className="text-xs text-muted-foreground">{prompt.subtitle}</p>
           </Button>
         ))}
-      </div>
-
-      {/* Mobile: Horizontal scroll */}
-      <div className="sm:hidden">
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-          {promptSuggestions.map((prompt, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              className="h-auto flex flex-col items-start text-left p-3 min-w-[200px] flex-shrink-0"
-              onClick={() =>
-                append({
-                  role: "user",
-                  content: `${prompt.title} ${prompt.subtitle}`.trim(),
-                })
-              }
-            >
-              <p className="font-semibold text-sm">{prompt.title}</p>
-              <p className="text-xs text-muted-foreground">{prompt.subtitle}</p>
-            </Button>
-          ))}
-        </div>
       </div>
     </div>
   </div>
