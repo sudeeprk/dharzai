@@ -3,7 +3,14 @@
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { LogOut, MessageSquare, Plus, Sparkles, Trash2 } from "lucide-react";
+import {
+  LogOut,
+  MessageSquare,
+  Plus,
+  Sparkles,
+  Trash2,
+  SquarePen,
+} from "lucide-react";
 import type { User } from "next-auth";
 import type { Chat } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -96,7 +103,7 @@ export function MobileSidebar({
                 onClick={() => setIsOpen(false)}
               >
                 <Link href="/">
-                  <Plus className="mr-2 h-4 w-4" />
+                  <SquarePen className="mr-2 h-4 w-4 text-white" />
                   New Chat
                 </Link>
               </Button>

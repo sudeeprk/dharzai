@@ -34,6 +34,7 @@ import {
   Plus,
   Sparkles,
   Trash2,
+  SquarePen,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -105,7 +106,7 @@ export function Sidebar({ user, chats, activeChatId }: SidebarProps) {
             className={cn("w-full", isCollapsed && "justify-center")}
           >
             <Link href="/">
-              <Plus className="mr-2 h-4 w-4" />
+              <SquarePen className="mr-2 h-4 w-4 text-white" />
               {!isCollapsed && "New Chat"}
             </Link>
           </Button>

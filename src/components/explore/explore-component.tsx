@@ -15,7 +15,7 @@ import {
   MapPin,
   Loader2,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { PlaceCard } from "@/components/explore/place-card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -43,16 +43,9 @@ const categoryButtons = [
   { name: "Events", icon: CalendarDays, query: "events near me" },
 ] as const;
 
-const examplePrompts = [
-  "Best vegetarian restaurant near me",
-  "Open pharmacy near Fremont now",
-  "Events for kids this Saturday",
-  "Dentist for Invisalign near Mission Blvd",
-  "Coffee shop with WiFi nearby",
-  "24 hour gas station near me",
-] as const;
-
 export function ExploreClient() {
+  const resultsRef = useRef<HTMLDivElement>(null);
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Place[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -170,6 +163,7 @@ export function ExploreClient() {
 
         if (data.places && Array.isArray(data.places)) {
           setResults(data.places);
+          resultsRef.current?.scrollIntoView({ behavior: "smooth" });
           if (data.places.length === 0) {
             setError(
               `No results found for "${searchQuery}". Try a different search term.`
@@ -208,14 +202,6 @@ export function ExploreClient() {
     [handleSearch]
   );
 
-  const handleExampleClick = useCallback(
-    (prompt: string) => {
-      setQuery(prompt);
-      handleSearch(prompt);
-    },
-    [handleSearch]
-  );
-
   const retryLocation = useCallback(() => {
     if (!mounted) return;
     setLocationError(false);
@@ -238,14 +224,14 @@ export function ExploreClient() {
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
           Find Anything Nearby
         </h1>
-        <p className="text-muted-foreground max-w-2xl text-sm md:text-lg">
+        <p className="hidden md:block text-muted-foreground max-w-2xl text-sm md:text-lg">
           Want a good pizza place near home? Need a nearby doctor, grocery
           store, or something fun to do this weekend? Just ask Dharz AI — we'll
           find it for you using live local search.
         </p>
       </div>
 
-      <Card className="max-w-4xl mx-auto p-4 md:p-6 shadow-xl">
+      <Card className="max-w-4xl mx-auto p-4 md:p-6 shadow">
         <form onSubmit={handleSubmit} className="relative mb-4">
           <Input
             value={query}
@@ -297,39 +283,36 @@ export function ExploreClient() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 mb-6">
-          {categoryButtons.map((item) => (
-            <Button
-              key={item.name}
-              variant="outline"
-              className="flex flex-col h-20 gap-2 hover:bg-accent transition-colors"
-              onClick={() => handleCategoryClick(item.query)}
-              disabled={isLoading}
-            >
-              <item.icon className="h-6 w-6" />
-              <span className="text-xs">{item.name}</span>
-            </Button>
-          ))}
-        </div>
-
-        <div>
-          <p className="text-sm font-medium mb-2">Try these examples:</p>
-          <div className="flex flex-wrap gap-2">
-            {examplePrompts.map((prompt) => (
-              <button
-                key={prompt}
-                onClick={() => handleExampleClick(prompt)}
-                className="text-sm text-primary hover:underline hover:text-primary/80 transition-colors text-left"
+        {/* Updated category buttons section with horizontal scroll */}
+        <div className="mb-6 overflow-hidden">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-6 md:overflow-visible md:pb-0">
+            {categoryButtons.map((item) => (
+              <Button
+                key={item.name}
+                variant="outline"
+                className="flex flex-row gap-2 hover:bg-accent transition-colors whitespace-nowrap flex-shrink-0 md:flex-shrink"
+                onClick={() => handleCategoryClick(item.query)}
                 disabled={isLoading}
               >
-                "{prompt}"
-              </button>
+                <item.icon className="h-6 w-6" />
+                <span className="text-xs">{item.name}</span>
+              </Button>
             ))}
           </div>
         </div>
+
+        {/* Add custom CSS for hiding scrollbar */}
+        <style jsx>{`
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
       </Card>
 
-      {}
       <div className="max-w-7xl mx-auto">
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -370,7 +353,10 @@ export function ExploreClient() {
                 Found {results.length} results for "{query}"
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div
+              ref={resultsRef}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            >
               {results.map((place) => (
                 <PlaceCard key={place.id} place={place} />
               ))}

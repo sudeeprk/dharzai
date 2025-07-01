@@ -2,8 +2,7 @@
 
 import type { Message } from "ai/react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Bot, Copy, Check } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "../ui/button";
@@ -28,24 +27,18 @@ export function ChatMessage({ message }: { message: Message }) {
         !isAssistant && "justify-end"
       )}
     >
-      {isAssistant && (
-        <Avatar className="h-8 w-8 shrink-0">
-          <AvatarFallback className="bg-primary/20 text-primary">
-            <Bot className="h-5 w-5" />
-          </AvatarFallback>
-        </Avatar>
-      )}
-
       <div
         className={cn(
-          "flex flex-col max-w-[85%]",
+          "flex flex-col",
           isAssistant ? "items-start" : "items-end"
         )}
       >
         <div
           className={cn(
-            "space-y-2 rounded-lg p-3 shadow-sm",
-            isAssistant ? "bg-secondary" : "bg-primary text-primary-foreground"
+            "space-y-2 rounded-lg p-3",
+            isAssistant
+              ? ""
+              : "dark:bg-[#242628] bg-gray-100 dark:text-white text-black"
           )}
         >
           <div className="prose prose-sm dark:prose-invert max-w-none text-inherit prose-p:my-0 prose-headings:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0 prose-table:my-2 prose-table:w-full prose-th:p-2 prose-td:p-2 prose-th:border prose-td:border">
@@ -56,7 +49,7 @@ export function ChatMessage({ message }: { message: Message }) {
         </div>
 
         {isAssistant && (
-          <div className="flex items-center pt-2 opacity-0 group-hover/message:opacity-100 transition-opacity">
+          <div className="flex items-center  transition-opacity">
             <Button
               onClick={onCopy}
               variant="ghost"
@@ -72,14 +65,6 @@ export function ChatMessage({ message }: { message: Message }) {
           </div>
         )}
       </div>
-
-      {!isAssistant && (
-        <Avatar className="h-8 w-8 shrink-0">
-          <AvatarFallback className="bg-secondary">
-            <User className="h-5 w-5" />
-          </AvatarFallback>
-        </Avatar>
-      )}
     </div>
   );
 }

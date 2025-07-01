@@ -5,27 +5,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  LogOut,
-  User as UserIcon,
   Sparkles,
   LayoutDashboard,
   Compass,
   PanelLeft,
+  SquarePen,
 } from "lucide-react";
 import type { User } from "next-auth";
 import type { Chat } from "@prisma/client";
-import { signOut } from "next-auth/react";
 import { useState } from "react";
 import { MobileSidebar } from "@/components/chat/mobile-sidebar";
+import { cn } from "@/lib/utils";
 
 interface TopNavProps {
   user: (User & { role: "USER" | "ADMIN" }) | null;
@@ -64,7 +54,7 @@ export function TopNav({ user, chats }: TopNavProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-10">
+    <header className="fixed top-0 left-0 right-0 z-10 bg-background">
       {user && (
         <MobileSidebar
           user={user}
@@ -97,10 +87,12 @@ export function TopNav({ user, chats }: TopNavProps) {
                 {navItems.map((item) => (
                   <Button
                     key={item.href}
-                    variant={
-                      getActiveTab() === item.href ? "secondary" : "ghost"
-                    }
-                    className="rounded-full px-2 md:px-4 py-2 h-auto text-xs md:text-sm"
+                    variant={getActiveTab() === item.href ? "default" : "ghost"}
+                    className={cn(
+                      "rounded-full px-2 md:px-4 py-2 h-auto text-xs md:text-sm",
+                      getActiveTab() === item.href &&
+                        "text-purple-100 bg-purple-700 hover:bg-purple-700 hover:text-purple-100"
+                    )}
                     onClick={() => handleNavigate(item.href)}
                   >
                     <item.icon className=" h-4 w-4" />
@@ -119,7 +111,7 @@ export function TopNav({ user, chats }: TopNavProps) {
           {/* Right side controls */}
 
           {!user && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end w-full gap-2">
               <div className="flex items-center gap-2">
                 <Button asChild variant="ghost">
                   <Link href="/login">Login</Link>
@@ -130,6 +122,14 @@ export function TopNav({ user, chats }: TopNavProps) {
                 <ThemeToggle className="hidden md:block md:ml-2" />
               </div>
             </div>
+          )}
+          {user && (
+            <Link
+              href="/"
+              className="flex items-center justify-end w-full gap-2"
+            >
+              <SquarePen className="h-4 w-4 text-gray-700" />
+            </Link>
           )}
         </div>
       </div>
