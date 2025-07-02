@@ -1,14 +1,19 @@
-"use client";
-
 import type { Message } from "ai/react";
 import { cn } from "@/lib/utils";
-import { Copy, Check } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { User, Bot, Copy, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "../ui/button";
 import { useState } from "react";
+import Image from "next/image";
 
-export function ChatMessage({ message }: { message: Message }) {
+interface ChatMessageProps {
+  message: Message;
+  imageUrl?: string | null;
+}
+
+export function ChatMessage({ message, imageUrl }: ChatMessageProps) {
   const isAssistant = message.role === "assistant";
   const [hasCopied, setHasCopied] = useState(false);
 
@@ -29,7 +34,7 @@ export function ChatMessage({ message }: { message: Message }) {
     >
       <div
         className={cn(
-          "flex flex-col",
+          "flex flex-col max-w-[85%]",
           isAssistant ? "items-start" : "items-end"
         )}
       >
@@ -41,6 +46,18 @@ export function ChatMessage({ message }: { message: Message }) {
               : "dark:bg-[#242628] bg-gray-100 dark:text-white text-black"
           )}
         >
+          {imageUrl && (
+            <div className="mb-2 rounded-lg overflow-hidden border">
+              <Image
+                src={imageUrl}
+                alt="User upload"
+                width={300}
+                height={300}
+                className="object-contain"
+                unoptimized // Since it's from R2, we don't need Next.js optimization
+              />
+            </div>
+          )}
           <div className="prose prose-sm dark:prose-invert max-w-none text-inherit prose-p:my-0 prose-headings:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0 prose-table:my-2 prose-table:w-full prose-th:p-2 prose-td:p-2 prose-th:border prose-td:border">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {message.content}
@@ -49,7 +66,7 @@ export function ChatMessage({ message }: { message: Message }) {
         </div>
 
         {isAssistant && (
-          <div className="flex items-center  transition-opacity">
+          <div className="flex items-center pt-2 opacity-0 group-hover/message:opacity-100 transition-opacity">
             <Button
               onClick={onCopy}
               variant="ghost"

@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -73,6 +72,7 @@ model Message {
   chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
   role      String
   content   String
+  imageUrl  String?
   createdAt DateTime @default(now())
 }
 

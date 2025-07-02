@@ -106,7 +106,7 @@ export function Sidebar({ user, chats, activeChatId }: SidebarProps) {
             className={cn("w-full", isCollapsed && "justify-center")}
           >
             <Link href="/">
-              <SquarePen className="mr-2 h-4 w-4 text-white" />
+              <SquarePen className="mr-2 h-4 w-4 text-white dark:text-black" />
               {!isCollapsed && "New Chat"}
             </Link>
           </Button>

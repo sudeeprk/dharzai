@@ -25,7 +25,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
     orderBy: { createdAt: "desc" },
     include: {
       messages: {
-        select: { content: true },
+        select: { content: true, imageUrl: true },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -53,6 +53,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
     id: m.id,
     content: m.content,
     role: m.role as "user" | "assistant",
+    imageUrl: m.imageUrl,
   }));
 
   return (

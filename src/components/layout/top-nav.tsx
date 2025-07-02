@@ -128,7 +128,7 @@ export function TopNav({ user, chats }: TopNavProps) {
               href="/"
               className="flex items-center justify-end w-full gap-2"
             >
-              <SquarePen className="h-4 w-4 text-gray-700" />
+              <SquarePen className="h-4 w-4 text-gray-700 dark:text-gray-500" />
             </Link>
           )}
         </div>

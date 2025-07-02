@@ -1,4 +1,12 @@
-import { ArrowUp, Paperclip, X, Square, Search, Globe2 } from "lucide-react";
+import {
+  ArrowUp,
+  Paperclip,
+  X,
+  Square,
+  Search,
+  Globe2,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import * as React from "react";
@@ -21,9 +29,9 @@ interface ChatInputProps {
   ) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
+  isUploading: boolean;
   stop: () => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  file: File | null;
   filePreview: string | null;
   onFileRemove: () => void;
   isWebSearchEnabled: boolean;
@@ -35,9 +43,9 @@ export function ChatInput({
   handleInputChange,
   handleSubmit,
   isLoading,
+  isUploading,
   stop,
   onFileChange,
-  file,
   filePreview,
   onFileRemove,
   isWebSearchEnabled,
@@ -57,7 +65,7 @@ export function ChatInput({
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       const form = e.currentTarget.form;
-      if (form && !isLoading) {
+      if (form && !isLoading && !isUploading) {
         const submitEvent = new Event("submit", {
           bubbles: true,
           cancelable: true,
@@ -80,15 +88,22 @@ export function ChatInput({
             fill
             className="object-cover"
           />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/50 text-white hover:bg-black/75"
-            onClick={onFileRemove}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          {isUploading && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <Loader2 className="h-6 w-6 text-white animate-spin" />
+            </div>
+          )}
+          {!isUploading && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/50 text-white hover:bg-black/75"
+              onClick={onFileRemove}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       )}
       <div className="relative flex w-full items-end">
@@ -109,7 +124,7 @@ export function ChatInput({
                   size="icon"
                   className="h-9 w-9 rounded-lg"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isLoading}
+                  disabled={isLoading || isUploading}
                   aria-label="Attach file"
                 >
                   <Paperclip className="h-5 w-5" />
@@ -135,7 +150,7 @@ export function ChatInput({
                       : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                   )}
                   onClick={() => onWebSearchChange(!isWebSearchEnabled)}
-                  disabled={isLoading}
+                  disabled={isLoading || isUploading}
                   aria-label="Toggle web search"
                 >
                   <IoIosGlobe
@@ -166,7 +181,7 @@ export function ChatInput({
           placeholder="Send a message..."
           className="flex-1 resize-none pl-24 pr-14 text-base rounded-xl py-3 px-4 shadow-sm max-h-48 overflow-y-auto"
           rows={1}
-          disabled={isLoading}
+          disabled={isLoading || isUploading}
         />
         {isLoading ? (
           <Button
@@ -183,10 +198,14 @@ export function ChatInput({
             type="submit"
             size="icon"
             className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
-            disabled={!input.trim() && !file}
+            disabled={(!input.trim() && !filePreview) || isUploading}
             aria-label="Send message"
           >
-            <ArrowUp className="h-5 w-5" />
+            {isUploading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <ArrowUp className="h-5 w-5" />
+            )}
           </Button>
         )}
       </div>
