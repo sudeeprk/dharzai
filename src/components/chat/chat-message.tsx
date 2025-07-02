@@ -1,7 +1,8 @@
+"use client";
+
 import type { Message } from "ai/react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Bot, Copy, Check } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "../ui/button";
@@ -34,7 +35,7 @@ export function ChatMessage({ message, imageUrl }: ChatMessageProps) {
     >
       <div
         className={cn(
-          "flex flex-col max-w-[85%]",
+          "flex flex-col",
           isAssistant ? "items-start" : "items-end"
         )}
       >
@@ -54,7 +55,7 @@ export function ChatMessage({ message, imageUrl }: ChatMessageProps) {
                 width={300}
                 height={300}
                 className="object-contain"
-                unoptimized // Since it's from R2, we don't need Next.js optimization
+                unoptimized
               />
             </div>
           )}

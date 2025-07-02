@@ -19,7 +19,7 @@ export default async function AdminPage() {
 
   return (
     <AppLayout>
-      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-20 md:pt-20">
         <Card>
           <CardHeader>
             <CardTitle>User Management</CardTitle>

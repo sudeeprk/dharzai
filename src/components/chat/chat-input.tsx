@@ -6,6 +6,7 @@ import {
   Search,
   Globe2,
   Loader2,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,7 +58,10 @@ export function ChatInput({
   React.useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      const scrollHeight = textareaRef.current.scrollHeight;
+      // Limit the height to max 6 lines (approximately 144px)
+      const maxHeight = Math.min(scrollHeight, 144);
+      textareaRef.current.style.height = `${maxHeight}px`;
     }
   }, [input]);
 
@@ -106,7 +110,8 @@ export function ChatInput({
           )}
         </div>
       )}
-      <div className="relative flex w-full items-end">
+
+      <div className="relative flex w-full flex-col border shadow-sm rounded-xl bg-background">
         <input
           type="file"
           ref={fileInputRef}
@@ -114,100 +119,109 @@ export function ChatInput({
           className="hidden"
           accept="image/*"
         />
-        <div className="absolute left-2 bottom-1.5 flex items-center gap-1">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 rounded-lg"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isLoading || isUploading}
-                  aria-label="Attach file"
-                >
-                  <Paperclip className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Attach an image</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-9 w-9 rounded-lg transition-all duration-200 ease-in-out",
-                    isWebSearchEnabled
-                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  )}
-                  onClick={() => onWebSearchChange(!isWebSearchEnabled)}
-                  disabled={isLoading || isUploading}
-                  aria-label="Toggle web search"
-                >
-                  <IoIosGlobe
-                    className={cn(
-                      "h-5 w-5 transition-transform duration-200",
-                      isWebSearchEnabled && "scale-110"
-                    )}
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="flex items-center gap-2">
-                  <IoIosGlobe className="h-4 w-4" />
-                  <span>
-                    {isWebSearchEnabled ? "Disable" : "Enable"} Web Search
-                  </span>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        {/* Input field - First row */}
+        <div className="px-4 pt-3 pb-2">
+          <Textarea
+            ref={textareaRef}
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Send a message..."
+            className="w-full resize-none text-base border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 min-h-[24px] leading-6"
+            rows={1}
+            disabled={isLoading || isUploading}
+          />
         </div>
 
-        <Textarea
-          ref={textareaRef}
-          value={input}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Send a message..."
-          className="flex-1 resize-none pl-24 pr-14 text-base rounded-xl py-3 px-4 shadow-sm max-h-48 overflow-y-auto"
-          rows={1}
-          disabled={isLoading || isUploading}
-        />
-        {isLoading ? (
-          <Button
-            type="button"
-            onClick={stop}
-            size="icon"
-            className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
-            aria-label="Stop generation"
-          >
-            <Square className="h-5 w-5" />
-          </Button>
-        ) : (
-          <Button
-            type="submit"
-            size="icon"
-            className="absolute right-2 bottom-1.5 h-9 w-9 rounded-lg"
-            disabled={(!input.trim() && !filePreview) || isUploading}
-            aria-label="Send message"
-          >
-            {isUploading ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <ArrowUp className="h-5 w-5" />
-            )}
-          </Button>
-        )}
+        {/* Action buttons - Second row */}
+        <div className="flex items-center justify-between px-3 pb-3">
+          <div className="flex items-center gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-lg"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isLoading || isUploading}
+                    aria-label="Attach file"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Attach an image</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "h-8 w-8 rounded-lg transition-all duration-200 ease-in-out",
+                      isWebSearchEnabled
+                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    )}
+                    onClick={() => onWebSearchChange(!isWebSearchEnabled)}
+                    disabled={isLoading || isUploading}
+                    aria-label="Toggle web search"
+                  >
+                    <IoIosGlobe
+                      className={cn(
+                        "h-4 w-4 transition-transform duration-200",
+                        isWebSearchEnabled && "scale-110"
+                      )}
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="flex items-center gap-2">
+                    <IoIosGlobe className="h-4 w-4" />
+                    <span>
+                      {isWebSearchEnabled ? "Disable" : "Enable"} Web Search
+                    </span>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          {/* Submit/Stop button on the right */}
+          {isLoading ? (
+            <Button
+              type="button"
+              onClick={stop}
+              size="icon"
+              className="h-8 w-8 rounded-lg"
+              aria-label="Stop generation"
+            >
+              <Square className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              size="icon"
+              className="h-8 w-8 rounded-lg"
+              disabled={(!input.trim() && !filePreview) || isUploading}
+              aria-label="Send message"
+            >
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ArrowUp className="h-4 w-4" />
+              )}
+            </Button>
+          )}
+        </div>
       </div>
     </form>
   );

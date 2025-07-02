@@ -19,38 +19,45 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    // setIsLoading(true);
 
-    try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-      if (res.ok) {
-        toast({
-          title: "Signup Successful",
-          description: "You can now log in with your credentials.",
-        });
-        router.push("/login");
-      } else {
-        const data = await res.json();
-        console.log(data);
-        toast({
-          variant: "destructive",
-          title: "Signup Failed",
-          description: data.message || "An error occurred.",
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An unexpected error occurred.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    console.log(name, email, password);
+    toast({
+      title: "Signup Failed",
+      description: "An error occurred.",
+      variant: "destructive",
+    });
+    router.push("/login");
+    // try {
+    //   const res = await fetch("/api/register", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ name, email, password }),
+    //   });
+    //   if (res.ok) {
+    //     toast({
+    //       title: "Signup Successful",
+    //       description: "You can now log in with your credentials.",
+    //     });
+    //     router.push("/login");
+    //   } else {
+    //     const data = await res.json();
+    //     console.log(data);
+    //     toast({
+    //       variant: "destructive",
+    //       title: "Signup Failed",
+    //       description: data.message || "An error occurred.",
+    //     });
+    //   }
+    // } catch (error) {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "Error",
+    //     description: "An unexpected error occurred.",
+    //   });
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (

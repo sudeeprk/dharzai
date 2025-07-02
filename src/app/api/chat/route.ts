@@ -64,16 +64,8 @@ export async function POST(req: NextRequest) {
       isWebSearchEnabled,
     } = await req.json();
 
-    console.log("🔵 Incoming Payload:", {
-      messages,
-      clientChatId,
-      imageUrl,
-      isWebSearchEnabled,
-    });
-
     const session = await auth();
     const userId = session?.user?.id;
-    console.log("🔐 Authenticated User ID:", userId);
 
     let systemPrompt = baseSystemPrompt;
     if (isWebSearchEnabled) {
@@ -92,14 +84,11 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    console.log("🧠 Parsed Core Messages (before image patch):", coreMessages);
-
     // Convert image URL to base64 data URL and inject into the last user message
     if (imageUrl && coreMessages.length) {
       const last = coreMessages[coreMessages.length - 1];
       if (last.role === "user") {
         try {
-          console.log("🖼️ Converting image URL to base64 data URL...");
           const base64DataUrl = await imageUrlToBase64DataUrl(imageUrl);
 
           // Use the correct AI SDK format for multimodal content
@@ -110,15 +99,6 @@ export async function POST(req: NextRequest) {
               image: base64DataUrl,
             },
           ];
-          console.log("✅ Modified Last User Message with Base64 Image:", {
-            textLength:
-              typeof last.content[0].text === "string"
-                ? last.content[0].text.length
-                : 0,
-            imageDataUrlLength: base64DataUrl.length,
-            imagePrefix: base64DataUrl.substring(0, 50) + "...",
-            mimeType: getMimeTypeFromUrl(imageUrl),
-          });
         } catch (error) {
           console.error("❌ Failed to convert image URL to base64:", error);
           // Fallback to original URL method if conversion fails
@@ -129,7 +109,6 @@ export async function POST(req: NextRequest) {
               image: imageUrl, // Try direct URL as fallback
             },
           ];
-          console.log("⚠️ Falling back to direct image URL method");
         }
       }
     }
@@ -138,9 +117,6 @@ export async function POST(req: NextRequest) {
       { role: "system", content: systemPrompt },
       ...coreMessages,
     ];
-
-    console.log("🧩 Final Message Payload Sent to AI:");
-    console.dir(allMessages, { depth: null });
 
     const lastMessage = messages.at(-1);
     let userMessageToSave = lastMessage?.content;
@@ -162,11 +138,6 @@ export async function POST(req: NextRequest) {
       ? openai.responses("gpt-4o")
       : openai("gpt-4o");
 
-    console.log(
-      "🧪 Starting AI stream with model:",
-      isWebSearchEnabled ? "gpt-4o (tools)" : "gpt-4o"
-    );
-
     let chat: Chat | null = null;
 
     if (userId) {
@@ -178,8 +149,6 @@ export async function POST(req: NextRequest) {
           })
         : await prisma.chat.create({ data: { userId } });
 
-      console.log("📁 Chat Record:", chat);
-
       await prisma.message.create({
         data: {
           chatId: chat.id,
@@ -188,8 +157,6 @@ export async function POST(req: NextRequest) {
           imageUrl,
         },
       });
-
-      console.log("📨 Saved User Message to DB");
     }
 
     const result = await streamText({
@@ -198,7 +165,6 @@ export async function POST(req: NextRequest) {
       tools: toolConfig ? { web_search: toolConfig.web_search } : undefined,
       maxSteps: isWebSearchEnabled ? 2 : 1,
       onFinish: async ({ text }) => {
-        console.log("✅ AI Response Stream Finished");
         if (userId && chat?.id) {
           await prisma.message.create({
             data: {
@@ -208,7 +174,6 @@ export async function POST(req: NextRequest) {
               imageUrl: imageUrl ?? null,
             },
           });
-          console.log("📥 Assistant Response Saved to DB");
         }
       },
     });

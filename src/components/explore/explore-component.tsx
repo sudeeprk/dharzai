@@ -35,12 +35,48 @@ interface Place {
 }
 
 const categoryButtons = [
-  { name: "Restaurants", icon: UtensilsCrossed, query: "restaurants near me" },
-  { name: "Doctors", icon: Stethoscope, query: "doctors near me" },
-  { name: "Grocery", icon: ShoppingCart, query: "grocery stores near me" },
-  { name: "Coffee", icon: Coffee, query: "coffee shops near me" },
-  { name: "Gas Stations", icon: Fuel, query: "gas stations near me" },
-  { name: "Events", icon: CalendarDays, query: "events near me" },
+  {
+    name: "Restaurants",
+    icon: UtensilsCrossed,
+    query: "restaurants near me",
+    color:
+      "bg-green-100 text-green-500 hover:bg-green-200 hover:text-green-600 dark:bg-green-900 dark:text-green-400 dark:hover:bg-green-800 dark:hover:text-green-300",
+  },
+  {
+    name: "Doctors",
+    icon: Stethoscope,
+    query: "doctors near me",
+    color:
+      "bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-600 dark:bg-blue-900 dark:text-blue-400 dark:hover:bg-blue-800 dark:hover:text-blue-300",
+  },
+  {
+    name: "Grocery",
+    icon: ShoppingCart,
+    query: "grocery stores near me",
+    color:
+      "bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 dark:bg-red-900 dark:text-red-400 dark:hover:bg-red-800 dark:hover:text-red-300",
+  },
+  {
+    name: "Coffee",
+    icon: Coffee,
+    query: "coffee shops near me",
+    color:
+      "bg-yellow-100 text-yellow-500 hover:bg-yellow-200 hover:text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400 dark:hover:bg-yellow-800 dark:hover:text-yellow-300",
+  },
+  {
+    name: "Gas Stations",
+    icon: Fuel,
+    query: "gas stations near me",
+    color:
+      "bg-purple-100 text-purple-500 hover:bg-purple-200 hover:text-purple-600 dark:bg-purple-900 dark:text-purple-400 dark:hover:bg-purple-800 dark:hover:text-purple-300",
+  },
+  {
+    name: "Events",
+    icon: CalendarDays,
+    query: "events near me",
+    color:
+      "bg-pink-100 text-pink-500 hover:bg-pink-200 hover:text-pink-600 dark:bg-pink-900 dark:text-pink-400 dark:hover:bg-pink-800 dark:hover:text-pink-300",
+  },
 ] as const;
 
 export function ExploreClient() {
@@ -221,7 +257,7 @@ export function ExploreClient() {
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
       <div className="flex flex-col items-center text-center space-y-2 pt-16">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
           Find Anything Nearby
         </h1>
         <p className="hidden md:block text-muted-foreground max-w-2xl text-sm md:text-lg">
@@ -237,7 +273,7 @@ export function ExploreClient() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Ask anything... e.g., 'Where can I get breakfast near me?'"
-            className="h-14 text-base pl-4 pr-16 rounded-lg"
+            className="h-14 text-base bg-background pl-4 pr-16 rounded-lg"
             disabled={isLoading}
           />
           <Button
@@ -290,7 +326,7 @@ export function ExploreClient() {
               <Button
                 key={item.name}
                 variant="outline"
-                className="flex flex-row gap-2 hover:bg-accent transition-colors whitespace-nowrap flex-shrink-0 md:flex-shrink"
+                className={`flex flex-row gap-2 hover:bg-accent transition-colors whitespace-nowrap flex-shrink-0 md:flex-shrink ${item.color}`}
                 onClick={() => handleCategoryClick(item.query)}
                 disabled={isLoading}
               >

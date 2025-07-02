@@ -8,20 +8,18 @@ import { ChatMessages } from "./chat-messages";
 import { ChatInput } from "./chat-input";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { Bot, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useToast } from "@/hooks/use-toast";
 import { getPresignedUrl } from "@/actions/r2";
 import { v4 as uuidv4 } from "uuid";
 
 const promptSuggestions = [
-  { title: "Explain quantum computing", subtitle: "in simple terms" },
   {
     title: "Got any creative ideas",
     subtitle: "for a 10 year old's birthday?",
   },
   { title: "Write a thank you note", subtitle: "to my interviewer" },
-  { title: "Help me debug a python script", subtitle: "that's not working" },
 ];
 
 interface EmptyStateProps {
@@ -90,6 +88,7 @@ export function ChatLayout({
     messages,
     input,
     handleInputChange,
+    setInput,
     handleSubmit: originalHandleSubmit,
     isLoading,
     stop,
@@ -143,6 +142,7 @@ export function ChatLayout({
 
     setFilePreview(null);
     setUploadedImageUrl(null);
+    setInput("");
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,7 +235,7 @@ export function ChatLayout({
           <EmptyState append={append} />
         )}
       </div>
-      <div className="p-4 md:p-6 bg-background border-t w-full max-w-2xl mx-auto">
+      <div className="p-4 md:p-6 bg-background w-full max-w-2xl mx-auto">
         <ChatInput
           input={input}
           handleInputChange={handleInputChange}

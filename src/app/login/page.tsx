@@ -89,12 +89,12 @@ export default function LoginPage() {
             {isLoading ? "Logging in..." : "Sign In"}
           </Button>
         </form>
-        <div className="mt-4 text-center text-sm">
+        {/* <div className="mt-4 text-center text-sm">
           Don't have an account?{" "}
           <Link href="/signup" className="underline font-medium">
             Sign up
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );
