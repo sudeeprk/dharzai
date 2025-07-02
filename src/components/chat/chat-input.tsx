@@ -168,7 +168,7 @@ export function ChatInput({
                     className={cn(
                       "h-8 w-8 rounded-lg transition-all duration-200 ease-in-out",
                       isWebSearchEnabled
-                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 shadow-sm"
+                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 dark:border-blue-800 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 shadow-sm"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                     )}
                     onClick={() => onWebSearchChange(!isWebSearchEnabled)}

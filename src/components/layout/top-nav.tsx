@@ -116,9 +116,6 @@ export function TopNav({ user, chats }: TopNavProps) {
                 <Button asChild variant="ghost">
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild className="hidden md:block">
-                  <Link href="/signup">Sign Up</Link>
-                </Button>
                 <ThemeToggle className="hidden md:block md:ml-2" />
               </div>
             </div>
